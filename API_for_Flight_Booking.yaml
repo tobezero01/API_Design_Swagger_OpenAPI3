@@ -1,0 +1,1602 @@
+openapi: 3.0.3
+info:
+  title: Flight Booking System API
+  description: >-
+    API documentation for the Flight Booking system, covering authentication, user management, flight operations, booking, and payment features.
+  version: 1.0.0
+  contact:
+    name: Flight Booking Support
+    email: support@flightbooking.com
+    url: https://flightbooking.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: APIs for user authentication and registration.
+  - name: Aircraft
+    description: APIs for managing aircraft details.
+  - name: Airline
+    description: APIs for managing airline information.
+  - name: Airport
+    description: APIs for managing airport data.
+  - name: User
+    description: APIs for user profile management, including user details and updates.
+  - name: Booking
+    description: APIs for managing flight bookings, including reservation, cancellation, and history.
+  - name: Flight
+    description: APIs for managing flight details, schedules, and availability.
+  - name: VNPay
+    description: APIs for handling VNPay payment gateway integration.
+  - name: TransitPoint
+    description: APIs for managing transit points and airport data.
+  
+paths:
+  /register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        description: User registration details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad request due to invalid input
+          
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      operationId: loginUser
+      requestBody:
+        description: User login credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Unauthorized access, invalid credentials
+  
+  /api/aircraft/all:
+    get:
+      tags:
+        - Aircraft
+      summary: Get all aircrafts
+      operationId: getAllAircrafts
+      responses:
+        '200':
+          description: List of all aircrafts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AircraftResponse'
+  /api/aircraft/add:
+    post:
+      tags:
+        - Aircraft
+      summary: Add a new aircraft
+      operationId: addAircraft
+      requestBody:
+        description: Aircraft details to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+      responses:
+        '201':
+          description: Aircraft created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftResponse'
+        '400':
+          description: Bad request due to invalid input
+
+  /api/aircraft/{id}:
+    get:
+      tags:
+        - Aircraft
+      summary: Get details of a specific aircraft by ID
+      operationId: getAircraftById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the aircraft
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Aircraft details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftResponse'
+        '404':
+          description: Aircraft not found
+
+    put:
+      tags:
+        - Aircraft
+      summary: Update details of an existing aircraft
+      operationId: updateAircraft
+      parameters:
+        - name: id
+          in: path
+          description: ID of the aircraft
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated aircraft details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AircraftRequest'
+      responses:
+        '200':
+          description: Aircraft updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AircraftResponse'
+        '400':
+          description: Bad request due to invalid input
+        '404':
+          description: Aircraft not found
+          
+  /api/aircraft/delete/{id}:
+    delete:
+      tags:
+        - Aircraft
+      summary: Delete an existing aircraft by ID
+      operationId: deleteAircraft
+      parameters:
+        - name: id
+          in: path
+          description: ID of the aircraft
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Aircraft deleted successfully
+        '404':
+          description: Aircraft not found
+  
+  /api/airlines/all:
+    get:
+      tags:
+        - Airline
+      summary: Get all airlines
+      operationId: getAllAirlines
+      responses:
+        '200':
+          description: List of all airlines
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirlineResponse'
+  /api/airlines/add:
+    post:
+      tags:
+        - Airline
+      summary: Add a new airline
+      operationId: addAirline
+      requestBody:
+        description: Airline details to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirlineRequest'
+      responses:
+        '201':
+          description: Airline created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineResponse'
+        '400':
+          description: Bad request due to invalid input
+
+  /api/airlines/{id}:
+    get:
+      tags:
+        - Airline
+      summary: Get details of a specific airline by ID
+      operationId: getAirlineById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airline
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Airline details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineResponse'
+        '404':
+          description: Airline not found
+
+    put:
+      tags:
+        - Airline
+      summary: Update details of an existing airline
+      operationId: updateAirline
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airline
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated airline details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirlineRequest'
+      responses:
+        '200':
+          description: Airline updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineResponse'
+        '400':
+          description: Bad request due to invalid input
+        '404':
+          description: Airline not found
+          
+  /api/airlines/delete/{id}:
+    delete:
+      tags:
+        - Airline
+      summary: Delete an airline by ID
+      operationId: deleteAirline
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airline
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Airline deleted successfully
+        '404':
+          description: Airline not found
+          
+  /api/airports/add:
+    post:
+      tags:
+        - Airport
+      summary: Add a new airport
+      operationId: addAirport
+      requestBody:
+        description: Airport details to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirportRequest'
+      responses:
+        '201':
+          description: Airport created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportResponse'
+        '400':
+          description: Bad request due to invalid input
+
+  /api/airports/{id}:
+    get:
+      tags:
+        - Airport
+      summary: Get details of a specific airport by ID
+      operationId: getAirportById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airport
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Airport details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportResponse'
+        '404':
+          description: Airport not found
+      
+    put:
+      tags:
+        - Airport
+      summary: Update details of an existing airport
+      operationId: updateAirport
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airport
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated airport details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirportRequest'
+      responses:
+        '200':
+          description: Airport updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportResponse'
+        '400':
+          description: Bad request due to invalid input
+        '404':
+          description: Airport not found
+
+  /api/airports/all:
+    get:
+      tags:
+        - Airport
+      summary: Get all airports
+      operationId: getAllAirports
+      responses:
+        '200':
+          description: List of all airports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirportResponse'
+
+  /api/airports/delete/{id}:
+    delete:
+      tags:
+        - Airport
+      summary: Delete an airport by ID
+      operationId: deleteAirport
+      parameters:
+        - name: id
+          in: path
+          description: ID of the airport
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Airport deleted successfully
+        '404':
+          description: Airport not found
+          
+  
+  /api/users/add:
+    post:
+      tags:
+        - User
+      summary: Add a new user
+      operationId: addUser
+      requestBody:
+        description: User details to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request due to invalid input
+
+  /api/users/{id}:
+    get:
+      tags:
+        - User
+      summary: Get user details by ID
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+    put:
+      tags:
+        - User
+      summary: Update user details by ID
+      operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated user details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Bad request due to invalid input
+        '404':
+          description: User not found
+
+    delete:
+      tags:
+        - User
+      summary: Delete user by ID
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /api/users/search:
+    get:
+      tags:
+        - User
+      summary: Find user by email
+      operationId: getUserByEmail
+      parameters:
+        - name: email
+          in: query
+          description: Email of the user to search for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+  /api/users/all:
+    get:
+      tags:
+        - User
+      summary: Get all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+  
+  /api/bookings/add:
+    post:
+      tags:
+        - Booking
+      summary: Create a new booking and payment URL
+      operationId: createBooking
+      requestBody:
+        description: Details of the booking to be created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking created successfully with payment URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNPayResponse'
+        '400':
+          description: Bad request due to invalid input
+
+  /api/bookings/{bookingId}:
+    get:
+      tags:
+        - Booking
+      summary: Get booking details by booking ID
+      operationId: getBookingById
+      parameters:
+        - name: bookingId
+          in: path
+          description: ID of the booking to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Booking details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '404':
+          description: Booking not found
+
+  /api/bookings/all:
+    get:
+      tags:
+        - Booking
+      summary: Get all bookings
+      operationId: getAllBookings
+      responses:
+        '200':
+          description: List of all bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+
+  /api/bookings/user/{userId}:
+    get:
+      tags:
+        - Booking
+      summary: Get all bookings by user ID
+      operationId: getBookingsByUserId
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to retrieve bookings for
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of bookings for the specified user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+        '404':
+          description: User not found
+
+  /api/bookings/filter:
+    post:
+      tags:
+        - Booking
+      summary: Search bookings by filter criteria
+      operationId: filterBookings
+      requestBody:
+        description: Search criteria to filter bookings
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: List of bookings matching the filter criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+  
+  /api/flights/add:
+    post:
+      tags:
+        - Flight
+      summary: Create a new flight
+      operationId: createFlight
+      requestBody:
+        description: The flight details to create a new flight
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequest'
+      responses:
+        '201':
+          description: Flight created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+  /api/flights/{id}:
+    get:
+      tags:
+        - Flight
+      summary: Get a flight by ID
+      operationId: getFlightById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the flight to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Flight found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+        '404':
+          description: Flight not found
+    put:
+      tags:
+        - Flight
+      summary: Update a flight by ID
+      operationId: updateFlightById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the flight to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: The updated flight details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequest'
+      responses:
+        '200':
+          description: Flight updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+        '404':
+          description: Flight not found
+    delete:
+      tags:
+        - Flight
+      summary: Delete a flight by ID
+      operationId: deleteFlightById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the flight to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Flight deleted successfully
+  /api/flights/all:
+    get:
+      tags:
+        - Flight
+      summary: Get all flights
+      operationId: getAllFlights
+      responses:
+        '200':
+          description: List of all flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlightResponse'
+  /api/flights/filter:
+    post:
+      tags:
+        - Flight
+      summary: Filter flights by specifications
+      operationId: filterFlights
+      requestBody:
+        description: Filter criteria for searching flights
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: List of filtered flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlightResponse'
+  /api/flights/search:
+    get:
+      tags:
+        - Flight
+      summary: Search for flights based on airport and date
+      operationId: searchFlights
+      parameters:
+        - name: depAirport
+          in: query
+          required: true
+          description: The departure airport code
+          schema:
+            type: string
+        - name: arrAirport
+          in: query
+          required: true
+          description: The arrival airport code
+          schema:
+            type: string
+        - name: depDate
+          in: query
+          required: true
+          description: The departure date (in YYYY-MM-DD format)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of flights matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlightResponse'
+                  
+  /api/vnpay:
+    post:
+      tags:
+        - VNPay
+      summary: Create Payment URL for a Booking
+      description: Generates a payment URL for the specified booking ID, which can be used by the user to complete the payment via VNPay.
+      operationId: createPaymentURL
+      parameters:
+        - name: bookingId
+          in: query
+          required: true
+          description: The ID of the booking to create a payment URL for.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Payment URL created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNPayResponse'
+        '400':
+          description: Invalid booking ID or bad request.
+        '404':
+          description: Booking not found.
+          
+  /api/vnpay/vnpay-callback:
+    get:
+      tags:
+        - VNPay
+      summary: Process VNPay Callback
+      description: This endpoint processes the callback from VNPay after the user completes the payment.
+      operationId: vnpayCallback
+      parameters:
+        - name: params
+          in: query
+          required: true
+          description: The parameters returned by VNPay callback (e.g., transaction information).
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+      responses:
+        '200':
+          description: Callback processed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VNPayResponse'
+        '400':
+          description: Invalid callback parameters or bad request.
+  
+  /api/transitpoints/add:
+    post:
+      tags:
+        - TransitPoint
+      summary: Create a new transit point
+      description: This endpoint creates a new transit point for a flight.
+      operationId: createTransitPoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitPointRequest'
+      responses:
+        '201':
+          description: Transit point created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransitPointResponse'
+        '400':
+          description: Invalid input.
+  
+  /api/transitpoints/{id}:
+    get:
+      tags:
+        - TransitPoint
+      summary: Get a transit point by ID
+      description: This endpoint retrieves a transit point by its unique ID.
+      operationId: getTransitPointById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the transit point to retrieve.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Transit point found successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransitPointResponse'
+        '404':
+          description: Transit point not found.
+    put:
+      tags:
+        - TransitPoint
+      summary: Update a transit point by ID
+      description: This endpoint updates a transit point with the specified ID.
+      operationId: updateTransitPoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the transit point to update.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransitPointRequest'
+      responses:
+        '200':
+          description: Transit point updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransitPointResponse'
+        '400':
+          description: Invalid input.
+        '404':
+          description: Transit point not found.
+  
+  /api/transitpoints/all:
+    get:
+      tags:
+        - TransitPoint
+      summary: Get all transit points
+      description: This endpoint retrieves a list of all transit points.
+      operationId: getAllTransitPoints
+      responses:
+        '200':
+          description: List of all transit points.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransitPointResponse'
+  
+  
+  /api/transitpoints/delete/{id}:
+    delete:
+      tags:
+        - TransitPoint
+      summary: Delete a transit point by ID
+      description: This endpoint deletes a transit point by its unique ID.
+      operationId: deleteTransitPoint
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the transit point to delete.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Transit point deleted successfully.
+        '404':
+          description: Transit point not found.
+        '500':
+          description: Internal server error.
+          
+          
+          
+          
+          
+          
+          
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for the new account.
+        password:
+          type: string
+          description: The password for the new account.
+        email:
+          type: string
+          description: The user's email address.
+      required:
+        - username
+        - password
+        - email
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for login.
+        password:
+          type: string
+          description: The password for login.
+      required:
+        - username
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The authentication token for the logged-in user.
+        username:
+          type: string
+          description: The username of the authenticated user.
+        email:
+          type: string
+          description: The email address of the authenticated user.
+      required:
+        - token
+        - username
+    
+    AircraftRequest:
+      type: object
+      properties:
+        model:
+          type: string
+          description: Model of the aircraft
+        totalSeat:
+          type: integer
+          description: Total number of seats in the aircraft
+      required:
+        - model
+        - totalSeat
+
+    AircraftResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the aircraft
+        model:
+          type: string
+          description: Model of the aircraft
+        totalSeat:
+          type: integer
+          description: Total number of seats in the aircraft
+      required:
+        - id
+        - model
+        - totalSeat
+    
+    AirlineRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the airline
+        code:
+          type: string
+          description: Code of the airline (e.g., IATA code)
+      required:
+        - name
+        - code
+
+    AirlineResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the airline
+        name:
+          type: string
+          description: Name of the airline
+        code:
+          type: string
+          description: Code of the airline (e.g., IATA code)
+      required:
+        - id
+        - name
+        - code
+    
+    AirportRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code of the airport (e.g., IATA code).
+        name:
+          type: string
+          description: Name of the airport.
+        city:
+          type: string
+          description: City where the airport is located.
+        country:
+          type: string
+          description: Country where the airport is located.
+      required:
+        - code
+        - name
+        - city
+        - country
+
+    AirportResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the airport.
+        code:
+          type: string
+          description: Code of the airport (e.g., IATA code).
+        name:
+          type: string
+          description: Name of the airport.
+        city:
+          type: string
+          description: City where the airport is located.
+        country:
+          type: string
+          description: Country where the airport is located.
+      required:
+        - id
+        - code
+        - name
+        - city
+        - country
+    
+    UserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User's email address
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+        username:
+          type: string
+          description: User's username
+        password:
+          type: string
+          description: User's password
+        phoneNumber:
+          type: string
+          description: User's phone number
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+          description: User's role in the system
+      required:
+        - email
+        - firstName
+        - lastName
+        - username
+        - password
+        - phoneNumber
+        - role
+        
+    BookingRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: ID of the user making the booking
+        flightId:
+          type: integer
+          description: ID of the flight being booked
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerRequest'
+        luggage:
+          type: array
+          items:
+            $ref: '#/components/schemas/LuggageRequest'
+        bookingTicketTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingTicketTypeRequest'
+      required:
+        - userId
+        - flightId
+        - passengers
+        - luggage
+        - bookingTicketTypes
+        
+    PassengerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Passenger's name
+        passportNumber:
+          type: string
+          description: Passport number of the passenger
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth of the passenger
+    BookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          description: Unique identifier of the booking
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        flightId:
+          type: integer
+          description: ID of the flight booked
+        status:
+          type: string
+          enum:
+            - CONFIRMED
+            - CANCELLED
+            - PENDING
+          description: Current status of the booking
+        totalPrice:
+          type: integer
+          description: Total price of the booking
+        bookingDate:
+          type: string
+          format: date-time
+          description: Date and time the booking was made
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerResponse'
+        luggage:
+          type: array
+          items:
+            $ref: '#/components/schemas/LuggageResponse'
+        bookingTicketType:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingTicketTypeResponse'
+      required:
+        - bookingId
+        - user
+        - flightId
+        - status
+        - totalPrice
+        - bookingDate
+        - passengers
+        - luggage
+        - bookingTicketType
+
+    PassengerResponse:
+      type: object
+      properties:
+        passengerId:
+          type: integer
+          description: Unique identifier of the passenger
+        firstName:
+          type: string
+          description: First name of the passenger
+        lastName:
+          type: string
+          description: Last name of the passenger
+        passportNumber:
+          type: string
+          description: Passport number of the passenger
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth of the passenger
+      required:
+        - passengerId
+        - firstName
+        - lastName
+        - passportNumber
+        - dateOfBirth
+
+    LuggageRequest:
+      type: object
+      properties:
+        price:
+          type: number
+          format: double
+          description: Price of the luggage
+        weight:
+          type: number
+          format: double
+          description: Weight of the luggage in kilograms
+      required:
+        - price
+        - weight
+
+    LuggageResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the luggage
+        price:
+          type: number
+          format: double
+          description: Price of the luggage
+        weight:
+          type: number
+          format: double
+          description: Weight of the luggage in kilograms
+        bookingId:
+          type: integer
+          description: ID of the booking associated with the luggage
+      required:
+        - id
+        - price
+        - weight
+        - bookingId
+
+    BookingTicketTypeRequest:
+      type: object
+      properties:
+        ticketTypeId:
+          type: integer
+          description: ID of the ticket type
+        quantity:
+          type: integer
+          description: Quantity of tickets for the specified type
+      required:
+        - ticketTypeId
+        - quantity
+
+    BookingTicketTypeResponse:
+      type: object
+      properties:
+        ticketTypeId:
+          type: integer
+          description: ID of the ticket type
+        bookingId:
+          type: integer
+          description: ID of the booking associated with the ticket type
+        quantity:
+          type: integer
+          description: Quantity of tickets for the specified type
+      required:
+        - ticketTypeId
+        - bookingId
+        - quantity
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the user
+        email:
+          type: string
+          description: Email address of the user
+        firstName:
+          type: string
+          description: First name of the user
+        lastName:
+          type: string
+          description: Last name of the user
+        username:
+          type: string
+          description: Username of the user
+        phoneNumber:
+          type: string
+          description: Phone number of the user
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+          description: Role of the user
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - username
+        - phoneNumber
+        - role
+    SearchRequest:
+      type: object
+      properties:
+        searchDetailRequest:
+          type: object
+          description: Detailed search criteria for bookings
+        globalOperator:
+          type: string
+          description: Operator used to combine search criteria
+    FlightRequest:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+          description: Flight number
+        aircraftId:
+          type: integer
+          description: ID of the aircraft
+        airlineId:
+          type: integer
+          description: ID of the airline
+        departureTime:
+          type: string
+          format: date-time
+          description: Time of departure
+        arrivalTime:
+          type: string
+          format: date-time
+          description: Time of arrival
+        departureAirportId:
+          type: integer
+          description: ID of the departure airport
+        arrivalAirportId:
+          type: integer
+          description: ID of the arrival airport
+        basePrice:
+          type: integer
+          description: Base price of the flight
+        transitPointList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransitPointRequest'
+      required:
+        - flightNumber
+        - aircraftId
+        - airlineId
+        - departureTime
+        - arrivalTime
+        - departureAirportId
+        - arrivalAirportId
+        - basePrice
+
+    FlightResponse:
+      type: object
+      properties:
+        flightId:
+          type: integer
+          description: Unique identifier of the flight
+        flightNumber:
+          type: string
+          description: Flight number
+        aircraft:
+          $ref: '#/components/schemas/AircraftRequest'
+        airline:
+          $ref: '#/components/schemas/AirlineRequest'
+        departureTime:
+          type: string
+          format: date-time
+          description: Time of departure
+        arrivalTime:
+          type: string
+          format: date-time
+          description: Time of arrival
+        departureAirport:
+          $ref: '#/components/schemas/AirportRequest'
+        arrivalAirport:
+          $ref: '#/components/schemas/AirportRequest'
+        basePrice:
+          type: integer
+          description: Base price of the flight
+        status:
+          type: string
+          enum:
+            - ON_TIME
+            - DELAYED
+            - CANCELLED
+          description: Flight status
+        transitPointList:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransitPointResponse'
+      required:
+        - flightId
+        - flightNumber
+        - aircraft
+        - airline
+        - departureTime
+        - arrivalTime
+        - departureAirport
+        - arrivalAirport
+        - basePrice
+        - status
+
+    TransitPointRequest:
+      type: object
+      properties:
+        departureTime:
+          type: string
+          format: date-time
+          description: Time of departure from the transit point
+        arrivalTime:
+          type: string
+          format: date-time
+          description: Time of arrival at the transit point
+        stopOrder:
+          type: integer
+          description: Order of the stop in the transit sequence
+        airportId:
+          type: integer
+          description: ID of the transit airport
+        flightId:
+          type: integer
+          description: ID of the flight associated with this transit point
+      required:
+        - departureTime
+        - arrivalTime
+        - stopOrder
+        - airportId
+        - flightId
+
+    TransitPointResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the transit point
+        departureTime:
+          type: string
+          format: date-time
+          description: Time of departure from the transit point
+        arrivalTime:
+          type: string
+          format: date-time
+          description: Time of arrival at the transit point
+        stopOrder:
+          type: integer
+          description: Order of the stop in the transit sequence
+        airport:
+          $ref: '#/components/schemas/AirportResponse'
+        flight:
+          $ref: '#/components/schemas/FlightResponse'
+      required:
+        - id
+        - departureTime
+        - arrivalTime
+        - stopOrder
+        - airport
+        - flight
+
+    FlightStatus:
+      type: string
+      enum:
+        - ON_TIME
+        - DELAYED
+        - CANCELLED
+      description: Status of the flight
+    
+    VNPayResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          description: The booking ID associated with the payment.
+        message:
+          type: string
+          description: The message describing the result of the payment process.
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - CANCELLED
+          description: The status of the booking.
+        paymentUrl:
+          type: string
+          description: The payment URL generated for the user.
+        paymentDetails:
+          $ref: '#/components/schemas/PaymentDetails'
+
+    PaymentDetails:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          description: The transaction ID from VNPay.
+        paymentMethod:
+          type: string
+          description: The payment method used (e.g., Credit Card, E-wallet).
+        amount:
+          type: integer
+          description: The amount of money paid.
+        paymentDate:
+          type: string
+          format: date-time
+          description: The timestamp of when the payment was made.
+    
